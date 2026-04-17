@@ -9,31 +9,24 @@ pub struct Rule {
 }
 
 impl Rule {
-    // generic function to apply any rule
     pub fn apply(&self, ant: &mut Ant, modified_cells: &mut HashMap<(i32, i32), usize>) {
-        let ant_position = ant.position();
-        // find the state associated with current position.
-        let cell_state = match modified_cells.contains_key(&ant_position) {
-            true => {
-                let cell_state = modified_cells[&ant_position];
-                let next_state = (cell_state + 1) % self.turns.len();
+        let pos = ant.position();
 
-                if next_state == 0 {
-                    modified_cells.remove(&ant_position);
-                } else {
-                    modified_cells.insert(ant_position, next_state);
-                }
+        // read current state (if not in the map, default state = 0)
+        let state = modified_cells.get(&pos).copied().unwrap_or(0);
 
-                cell_state
-            }
-            false => {
-                modified_cells.insert(ant_position, 1);
-                0
-            }
-        };
+        // apply turn based on current state
+        self.turns[state].apply(ant);
 
-        // the rule is in charge of applying the right rotation.
-        self.turns[cell_state].apply(ant);
+        // compute next state (nb of state possible = turns.len())
+        let next_state = (state + 1) % self.turns.len();
+
+        if next_state == 0 {
+            modified_cells.remove(&pos);
+        } else {
+            modified_cells.insert(pos, next_state);
+        }
+
         ant.move_forward();
     }
 

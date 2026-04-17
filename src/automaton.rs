@@ -6,7 +6,7 @@ use crate::rule::Rule;
 #[derive(Default)]
 pub struct Automaton {
     ant: Ant,
-    modified_cells: HashMap<(i32, i32), usize>,
+    modified_cells: HashMap<(i32, i32), usize>, // positions associated with a state
     rule: Rule,
     iteration: u64,
 }
