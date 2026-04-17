@@ -1,7 +1,8 @@
 use std::collections::HashSet;
 
-use crate::automaton::ant::Ant;
+use crate::ant::Ant;
 
+#[derive(Default)]
 pub struct Automaton {
     ant: Ant,
     black_cells: HashSet<(i32, i32)>, // store only black cell:#![warn()]s
