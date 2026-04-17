@@ -1,11 +1,13 @@
-use std::collections::HashSet;
+use std::collections::HashMap;
 
 use crate::ant::Ant;
+use crate::rule::Rule;
 
 #[derive(Default)]
 pub struct Automaton {
     ant: Ant,
-    black_cells: HashSet<(i32, i32)>, // store only black cell:#![warn()]s
+    modified_cells: HashMap<(i32, i32), usize>,
+    rule: Rule,
     iteration: u64,
 }
 
@@ -13,25 +15,14 @@ impl Automaton {
     pub fn new() -> Self {
         Automaton {
             ant: Ant::new(),
-            black_cells: HashSet::new(),
+            modified_cells: HashMap::new(),
+            rule: Rule::new("RL".to_string()),
             iteration: 0,
         }
     }
 
     pub fn update(&mut self) {
-        let ant_position = self.ant.position();
-
-        match self.black_cells.contains(&ant_position) {
-            true => {
-                self.black_cells.remove(&ant_position);
-                self.ant.turn_left();
-            }
-            false => {
-                self.black_cells.insert(ant_position);
-                self.ant.turn_right();
-            }
-        }
-        self.ant.move_forward();
+        self.rule.apply(&mut self.ant, &mut self.modified_cells);
         self.iteration += 1;
     }
 
@@ -51,13 +42,10 @@ impl Automaton {
         self.iteration
     }
 
-    pub fn is_black(&self, wx: i32, wy: i32) -> bool {
-        self.black_cells.contains(&(wx, wy))
+    pub fn cell_state(&self, wx: i32, wy: i32) -> usize {
+        match self.modified_cells.contains_key(&(wx, wy)) {
+            true => self.modified_cells[&(wx, wy)],
+            false => 0,
+        }
     }
-}
-
-#[derive(Clone)]
-pub enum GridState {
-    White,
-    Black,
 }

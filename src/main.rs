@@ -69,11 +69,7 @@ pub fn render(automaton: &Automaton, cell_size: f32) {
             let px = col as f32 * cell_size;
             let py = row as f32 * cell_size;
 
-            let color = if automaton.is_black(current_x, current_y) {
-                BLACK
-            } else {
-                WHITE
-            };
+            let color = choose_color(automaton.cell_state(current_x, current_y));
 
             draw_rectangle(px, py, cell_size, cell_size, color);
         }
@@ -91,4 +87,10 @@ pub fn render(automaton: &Automaton, cell_size: f32) {
         30.0,
         DARKGRAY,
     );
+}
+
+fn choose_color(cell_state: usize) -> Color {
+    let colors = [WHITE, BLACK, BLUE, GREEN];
+
+    colors[cell_state % colors.len()]
 }
