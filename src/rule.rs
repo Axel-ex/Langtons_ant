@@ -1,22 +1,13 @@
-use std::collections::HashMap;
-
 use crate::ant::Ant;
+use std::collections::HashMap;
+use thiserror::Error;
 
-#[derive(Default)]
+#[derive(Debug, Clone)]
 pub struct Rule {
-    states: Vec<usize>,
     turns: Vec<Turn>,
 }
 
 impl Rule {
-    pub fn new(turn_sequence: String) -> Self {
-        // TODO: parse the turn string into sequence of turn
-        let turns = vec![Turn::Right, Turn::Left];
-        let states = (0..turns.len()).collect();
-
-        Self { states, turns }
-    }
-
     // generic function to apply any rule
     pub fn apply(&self, ant: &mut Ant, modified_cells: &mut HashMap<(i32, i32), usize>) {
         let ant_position = ant.position();
@@ -46,6 +37,37 @@ impl Rule {
     }
 }
 
+#[derive(Debug, Error)]
+pub enum ParseRuleError {
+    #[error("invalid rule string (only 'L' and 'R' are allowed)")]
+    InvalidChar,
+}
+
+impl std::str::FromStr for Rule {
+    type Err = ParseRuleError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let mut turns = Vec::new();
+        for letter in s.to_lowercase().chars() {
+            match letter {
+                'l' => turns.push(Turn::Left),
+                'r' => turns.push(Turn::Right),
+                _ => return Err(ParseRuleError::InvalidChar),
+            }
+        }
+
+        Ok(Self { turns })
+    }
+}
+
+impl Default for Rule {
+    fn default() -> Self {
+        Self {
+            turns: vec![Turn::Right, Turn::Left],
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
 pub enum Turn {
     Right,
     Left,

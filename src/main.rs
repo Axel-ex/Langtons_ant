@@ -1,17 +1,18 @@
 use clap::Parser;
 use figlet_rs::Toilet;
-use macroquad::prelude::*;
+use macroquad::{color, prelude::*};
 
 pub mod ant;
 pub mod automaton;
 pub mod rule;
 
 use automaton::Automaton;
+use rule::Rule;
 
 #[derive(Debug, Parser)]
 #[command(version, about)]
 struct Args {
-    #[arg(short, long, default_value_t = 1)]
+    #[arg(short, long, default_value_t = 30)]
     tick_rate_ms: u64,
 
     #[arg(short, long, default_value_t = 10.0)]
@@ -19,6 +20,9 @@ struct Args {
 
     #[arg(short, long, default_value_t = 0)]
     skip_iter: u64,
+
+    #[arg(short, long, default_value = "RL")]
+    rule: Rule,
 }
 
 #[macroquad::main("Langton's ants")]
@@ -28,7 +32,7 @@ async fn main() {
     let mono_9_font = Toilet::mono9().unwrap();
     println!("{}", mono_9_font.convert("Langton's Ants").unwrap());
 
-    let mut automaton = Automaton::new();
+    let mut automaton = Automaton::new(args.rule);
     automaton.skip_n_iter(args.skip_iter);
 
     let tick_seconds = args.tick_rate_ms as f32 / 1000.0;
@@ -48,8 +52,6 @@ async fn main() {
 }
 
 pub fn render(automaton: &Automaton, cell_size: f32) {
-    clear_background(WHITE);
-
     // Divide the screen into fixed sized cells -> viewport coordinates
     let cols = (screen_width() / cell_size) as i32;
     let rows = (screen_height() / cell_size) as i32;
@@ -90,7 +92,13 @@ pub fn render(automaton: &Automaton, cell_size: f32) {
 }
 
 fn choose_color(cell_state: usize) -> Color {
-    let colors = [WHITE, BLACK, BLUE, GREEN];
+    if cell_state == 0 {
+        return WHITE;
+    }
 
-    colors[cell_state % colors.len()]
+    let h = (cell_state as f32 * 0.2) % 1.0;
+    const S: f32 = 0.8;
+    const L: f32 = 0.8;
+
+    color::hsl_to_rgb(h, S, L)
 }

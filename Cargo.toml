@@ -7,3 +7,4 @@ edition = "2024"
 clap = { version = "4.6.1", features = ["derive"] }
 figlet-rs = "1.0.0"
 macroquad = "0.4.14"
+thiserror = "2.0.18"

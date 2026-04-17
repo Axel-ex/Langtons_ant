@@ -12,11 +12,11 @@ pub struct Automaton {
 }
 
 impl Automaton {
-    pub fn new() -> Self {
+    pub fn new(rule: Rule) -> Self {
         Automaton {
             ant: Ant::new(),
             modified_cells: HashMap::new(),
-            rule: Rule::new("RL".to_string()),
+            rule,
             iteration: 0,
         }
     }
