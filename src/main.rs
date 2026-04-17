@@ -89,6 +89,13 @@ pub fn render(automaton: &Automaton, cell_size: f32) {
         30.0,
         DARKGRAY,
     );
+    draw_text(
+        format!("Rule: \"{}\"", automaton.rule_name()).as_str(),
+        40.0,
+        screen_height() - 60.0,
+        30.0,
+        DARKGRAY,
+    );
 }
 
 fn choose_color(cell_state: usize) -> Color {

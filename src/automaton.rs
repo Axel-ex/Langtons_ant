@@ -48,4 +48,8 @@ impl Automaton {
             false => 0,
         }
     }
+
+    pub fn rule_name(&self) -> &str {
+        self.rule.name()
+    }
 }

@@ -4,6 +4,7 @@ use thiserror::Error;
 
 #[derive(Debug, Clone)]
 pub struct Rule {
+    name: String,
     turns: Vec<Turn>,
 }
 
@@ -35,6 +36,10 @@ impl Rule {
         self.turns[cell_state].apply(ant);
         ant.move_forward();
     }
+
+    pub fn name(&self) -> &str {
+        &self.name
+    }
 }
 
 #[derive(Debug, Error)]
@@ -55,13 +60,17 @@ impl std::str::FromStr for Rule {
             }
         }
 
-        Ok(Self { turns })
+        Ok(Self {
+            name: s.to_string(),
+            turns,
+        })
     }
 }
 
 impl Default for Rule {
     fn default() -> Self {
         Self {
+            name: "RL".to_string(),
             turns: vec![Turn::Right, Turn::Left],
         }
     }
