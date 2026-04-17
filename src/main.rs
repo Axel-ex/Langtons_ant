@@ -4,6 +4,7 @@ use macroquad::prelude::*;
 
 pub mod ant;
 pub mod automaton;
+pub mod rule;
 
 use automaton::Automaton;
 
