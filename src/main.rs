@@ -67,7 +67,7 @@ pub fn render(automaton: &Automaton, cell_size: f32) {
             let current_x = x_origin + col;
             let current_y = y_origin + row;
 
-            // to pixel coordinates
+            // to screen space
             let px = col as f32 * cell_size;
             let py = row as f32 * cell_size;
 
@@ -103,7 +103,8 @@ fn choose_color(cell_state: usize) -> Color {
         return WHITE;
     }
 
-    let h = (cell_state as f32 * 0.2) % 1.0;
+    // select the hue based on cell state (step of 0,1, max 10 different colors)
+    let h = (cell_state as f32 * 0.1) % 1.0;
     const S: f32 = 0.8;
     const L: f32 = 0.8;
 

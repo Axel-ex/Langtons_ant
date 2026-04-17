@@ -5,7 +5,6 @@ Langton’s Ant is a 2D cellular automaton where an agent (“the ant”) moves 
 ## Usage
 
 ```
-```shell
 cargo run --release -- [OPTIONS]
 Options
 -t, --tick-rate-ms <TICK_RATE_MS>   Simulation speed (ms per update)
