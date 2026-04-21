@@ -39,11 +39,18 @@ impl Rule {
 pub enum ParseRuleError {
     #[error("invalid rule string (only 'L' and 'R' are allowed)")]
     InvalidChar,
+
+    #[error("empty rule string")]
+    EmptyRule,
 }
 
 impl std::str::FromStr for Rule {
     type Err = ParseRuleError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if s.is_empty() {
+            return Err(ParseRuleError::EmptyRule);
+        }
+
         let mut turns = Vec::new();
         for letter in s.to_lowercase().chars() {
             match letter {
