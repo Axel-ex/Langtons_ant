@@ -14,7 +14,7 @@ pub struct Automaton {
 impl Automaton {
     pub fn new(rule: Rule) -> Self {
         Automaton {
-            ant: Ant::new(),
+            ant: Ant::default(),
             modified_cells: HashMap::new(),
             rule,
             iteration: 0,
@@ -43,10 +43,7 @@ impl Automaton {
     }
 
     pub fn cell_state(&self, wx: i32, wy: i32) -> usize {
-        match self.modified_cells.contains_key(&(wx, wy)) {
-            true => self.modified_cells[&(wx, wy)],
-            false => 0,
-        }
+        self.modified_cells.get(&(wx, wy)).copied().unwrap_or(0)
     }
 
     pub fn rule_name(&self) -> &str {

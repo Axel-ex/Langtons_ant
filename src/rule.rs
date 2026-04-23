@@ -1,8 +1,8 @@
-use crate::ant::Ant;
+use crate::ant::{Ant, Turn};
 use std::collections::HashMap;
 use thiserror::Error;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Rule {
     name: String,
     turns: Vec<Turn>,
@@ -16,7 +16,7 @@ impl Rule {
         let state = modified_cells.get(&pos).copied().unwrap_or(0);
 
         // apply turn based on current state
-        self.turns[state].apply(ant);
+        ant.turn(self.turns[state]);
 
         // compute next state (nb of state possible = turns.len())
         let next_state = (state + 1) % self.turns.len();
@@ -35,7 +35,7 @@ impl Rule {
     }
 }
 
-#[derive(Debug, Error)]
+#[derive(Debug, PartialEq, Error)]
 pub enum ParseRuleError {
     #[error("invalid rule string (only 'L' and 'R' are allowed)")]
     InvalidChar,
@@ -76,17 +76,39 @@ impl Default for Rule {
     }
 }
 
-#[derive(Debug, Clone)]
-pub enum Turn {
-    Right,
-    Left,
-}
+#[cfg(test)]
+mod tests {
+    use std::str::FromStr;
 
-impl Turn {
-    pub fn apply(&self, ant: &mut Ant) {
-        match self {
-            Turn::Left => ant.turn_left(),
-            Turn::Right => ant.turn_right(),
-        }
+    use crate::ant::Direction;
+
+    use super::*;
+
+    #[test]
+    fn empty_rule() {
+        let rule = Rule::from_str("");
+
+        assert_eq!(rule, Err(ParseRuleError::EmptyRule));
+    }
+
+    #[test]
+    fn invalid_char() {
+        let rule = Rule::from_str("LLRK");
+
+        assert_eq!(rule, Err(ParseRuleError::InvalidChar));
+    }
+
+    #[test]
+    fn apply_rule() {
+        let rule = Rule::from_str("RL").unwrap();
+
+        let mut ant = Ant::new(Direction::Up); // create rule from direction and position
+        let mut modified_cells = HashMap::new();
+
+        rule.apply(&mut ant, &mut modified_cells);
+        //check modified modified_cells
+        assert_eq!(modified_cells.len(), 1);
+        assert_eq!(ant.direction(), Direction::Right);
+        assert_eq!(ant.position(), (1, 0));
     }
 }
